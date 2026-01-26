@@ -27,6 +27,12 @@ cmake_policy(PUSH)
 cmake_policy(VERSION 3.22...4.2)
 
 include(FindPackageHandleStandardArgs)
+set(Python3_ROOT_DIR "/usr/local/bin")  # Or wherever python3 is installed
+set(Python3_EXECUTABLE "/usr/local/bin/python3")  # Specify exact python executable
+
+# Alternatively, use find_package with specific components
+find_package(Python3 3.10 REQUIRED 
+    COMPONENTS Interpreter Development)
 
 set(_Python3Path_QUIET)
 if("${Python3Path_FIND_QUIETLY}")
@@ -66,11 +72,11 @@ try:
 	import setuptools
 except ModuleNotFoundError:
 	pass
-from distutils import sysconfig
-sys.stdout.write(';'.join([sysconfig.get_python_lib(prefix='',plat_specific=False,standard_lib=True),
-							sysconfig.get_python_lib(prefix='',plat_specific=True,standard_lib=True),
-							sysconfig.get_python_lib(prefix='',plat_specific=False,standard_lib=False),
-							sysconfig.get_python_lib(prefix='',plat_specific=True,standard_lib=False)]))
+import sysconfig
+sys.stdout.write(';'.join([sysconfig.get_path('stdlib'),
+                           sysconfig.get_path('platstdlib'), 
+                           sysconfig.get_path('purelib'),
+                           sysconfig.get_path('platlib'),]))
 			]=]
 			RESULT_VARIABLE _Python3Path_RESULT
 			OUTPUT_VARIABLE _Python3Path_LIBPATHS
