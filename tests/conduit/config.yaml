@@ -1,0 +1,26 @@
+name: "John Doe"
+age: 30
+is_active: true
+score: 95.5
+address:
+  street: "123 Main St"
+  city: "Anytown"
+  zip: 12345
+  coordinates:
+    lat: 40.7128
+    lon: -74.0060
+hobbies:
+  - "reading"
+  - "hiking"
+  - "coding"
+scores:
+  - 85
+  - 92
+  - 88
+metadata:
+  created: "2024-01-15"
+  version: 1.2
+  tags:
+    - "example"
+    - "test"
+    - "demo"
