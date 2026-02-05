@@ -82,7 +82,7 @@ option(BUILD_CONDUIT            "BUILD with conduit support" ON)
 
 ### Default build type
 
-if(NOT "${CMAKE_BUILD_TYPE}")
+if(NOT DEFINED CMAKE_BUILD_TYPE)
 	set(CMAKE_BUILD_TYPE "${DEFAULT_BUILD_TYPE}" CACHE STRING "Choose the type of build, options are: None Debug Release(default) RelWithDebInfo MinSizeRel ..." FORCE)
 endif()
 message(STATUS " **Profile**: Distribution profile is: `${DIST_PROFILE}' (-DDIST_PROFILE=${DIST_PROFILE})")
@@ -237,11 +237,11 @@ sbuild_add_dependency(yaml "${USE_DEFAULT}"
 	EMBEDDED_PATH "vendor/libyaml-0.2.5"
 	CMAKE_CACHE_ARGS
 		"-DBUILD_TESTING:BOOL=OFF"
-		"-DINSTALL_LIB_DIR:STRING=${CMAKE_INSTALL_LIBDIR}"
+		"-DCMAKE_POLICY_VERSION_MINIMUM:STRING=3.10" # needed until upstream libyaml is updated (https://github.com/yaml/libyaml/pull/314)
 		"-DINSTALL_BIN_DIR:STRING=${CMAKE_INSTALL_BINDIR}"
-		"-DINSTALL_INCLUDE_DIR:STRING=${CMAKE_INSTALL_INCLUDEDIR}"
 		"-DINSTALL_CMAKE_DIR:STRING=share/yaml/cmake"
-		"-DCMAKE_POLICY_VERSION_MINIMUM:STRING=3.5" # needed until upstream libyaml is updated (https://github.com/yaml/libyaml/pull/314)
+		"-DINSTALL_INCLUDE_DIR:STRING=${CMAKE_INSTALL_INCLUDEDIR}"
+		"-DINSTALL_LIB_DIR:STRING=${CMAKE_INSTALL_LIBDIR}"
 	VERSION 0.2.2
 )
 
@@ -254,9 +254,8 @@ if("${BUILD_FORTRAN}")
 endif()
 # if ( PDI or ... )
 sbuild_add_dependency(paraconf "${USE_DEFAULT}"
-	EMBEDDED_PATH "vendor/paraconf-1.0.1"
+	EMBEDDED_PATH "vendor/paraconf-1.0.3"
 	COMPONENTS ${PARACONF_COMPONENTS}
-	SOURCE_SUBDIR "paraconf"
 	CMAKE_CACHE_ARGS
 		"-DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=TRUE"
 		"-DUSE_yaml:STRING=SYSTEM"
@@ -421,6 +420,9 @@ endif()
 if("${BUILD_JSON_PLUGIN}")
 	sbuild_add_dependency(JSON "${USE_DEFAULT}"
 		EMBEDDED_PATH "vendor/json-3.11.4"
+		CMAKE_CACHE_ARGS
+			"-DCMAKE_POLICY_VERSION_MINIMUM:STRING=3.10" # needed until upstream is updated
+		VERSION 3.11
 	)
 endif()
 
@@ -516,6 +518,14 @@ sbuild_add_module(PDI_EXAMPLE
 sbuild_add_module(PDI_TESTS
 	ENABLE_BUILD_FLAG BUILD_TESTING
 	SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/tests"
+	DEPENDS PDI
+	INSTALL_COMMAND ""
+	SUBSTEPS test
+)
+
+sbuild_add_module(PDI_TEST_API
+	ENABLE_BUILD_FLAG BUILD_TESTING
+	SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/test_api"
 	DEPENDS PDI
 	INSTALL_COMMAND ""
 	SUBSTEPS test
