@@ -27,12 +27,7 @@ cmake_policy(PUSH)
 cmake_policy(VERSION 3.22...4.2)
 
 include(FindPackageHandleStandardArgs)
-set(Python3_ROOT_DIR "/usr/local/bin")  # Or wherever python3 is installed
-set(Python3_EXECUTABLE "/usr/local/bin/python3")  # Specify exact python executable
 
-# Alternatively, use find_package with specific components
-find_package(Python3 3.10 REQUIRED 
-    COMPONENTS Interpreter Development)
 
 set(_Python3Path_QUIET)
 if("${Python3Path_FIND_QUIETLY}")
