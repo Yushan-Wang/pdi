@@ -28,7 +28,6 @@ cmake_policy(VERSION 3.22...4.2)
 
 include(FindPackageHandleStandardArgs)
 
-
 set(_Python3Path_QUIET)
 if("${Python3Path_FIND_QUIETLY}")
 	set(_Python3Path_QUIET QUIET)
