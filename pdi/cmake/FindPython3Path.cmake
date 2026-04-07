@@ -72,11 +72,11 @@ try:
 	import setuptools
 except ModuleNotFoundError:
 	pass
-import sysconfig
-sys.stdout.write(';'.join([sysconfig.get_path('stdlib'),
-                           sysconfig.get_path('platstdlib'), 
-                           sysconfig.get_path('purelib'),
-                           sysconfig.get_path('platlib'),]))
+from distutils import sysconfig
+sys.stdout.write(';'.join([sysconfig.get_python_lib(prefix='',plat_specific=False,standard_lib=True),
+                           sysconfig.get_python_lib(prefix='',plat_specific=True,standard_lib=True),
+                           sysconfig.get_python_lib(prefix='',plat_specific=False,standard_lib=False),
+                           sysconfig.get_python_lib(prefix='',plat_specific=True,standard_lib=False)]))
 			]=]
 			RESULT_VARIABLE _Python3Path_RESULT
 			OUTPUT_VARIABLE _Python3Path_LIBPATHS
