@@ -76,6 +76,7 @@ option(BUILD_SHARED_LIBS        "Build shared libraries rather than static ones"
 option(BUILD_TRACE_PLUGIN       "Build Trace plugin" ON)
 option(BUILD_USER_CODE_PLUGIN   "Build User-code plugin" ON)
 option(BUILD_JSON_PLUGIN        "Build JSON plugin" OFF)
+option(BUILD_CONDUIT            "BUILD with conduit support" ON)
 
 
 
@@ -110,6 +111,9 @@ if("${BUILD_DECL_NETCDF_PLUGIN}")
 		list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/plugins/decl_netcdf/cmake/4.1")
 	endif()
 	list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/plugins/decl_netcdf/cmake")
+endif()
+if("${BUILD_CONDUIT}")
+	list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/vendor/conduit/install-debug/lib/cmake/conduit/")
 endif()
 set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" CACHE STRING "" FORCE)
 
