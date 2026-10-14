@@ -51,13 +51,13 @@ pdi:
       file: data.nc
       communicator: $MPI_COMM_WORLD # the MPI communicator used for HDF5 parallel synchronized write
       variables: # type of the datasets to create in file
-        data:
+        datav:
           type: array
           subtype: double
           size: [10, '$psize[0]*$dsize[0]', '$psize[1]*$dsize[1]']
       write:
         main_field: # the name of the data to write
-          variable: data
+          variable: datav
           when: '$iter<10'   # do only write the first 10 iterations (0...9)
           variable_selection: # only write into a single slice in time
             subsize:  [1, '$dsize[0]', '$dsize[1]']

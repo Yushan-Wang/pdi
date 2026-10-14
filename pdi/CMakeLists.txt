@@ -56,10 +56,14 @@ option(BUILD_SHARED_LIBS   "Build shared libraries rather than static ones" ON)
 option(BUILD_TESTING       "Build tests" ON)
 option(BUILD_FORTRAN       "Enable Fortran support" ON)
 option(BUILD_PYTHON        "Enable Python support" "${BUILD_UNSTABLE}")
+option(BUILD_CONDUIT       "BUILD with conduit support" ON)
 
 if(NOT "${BUILD_SHARED_LIBS}") 
 	message(FATAL_ERROR "Building PDI as a static lib is not supported currently")
 endif()
+
+find_package(conduit REQUIRED)
+	# list(APPEND CMAKE_MODULE_PATH "/Users/yushan/Codes/GitHub/pdi_yw/pdi/vendor/conduit/install-debug/lib/cmake/conduit/")
 
 
 # Language support
@@ -167,8 +171,9 @@ target_include_directories(PDI_C
 		PUBLIC "$<BUILD_INTERFACE:${PDI_BINARY_DIR}>"  "$<BUILD_INTERFACE:${PDI_SOURCE_DIR}/include/>"
 		PRIVATE "$<BUILD_INTERFACE:${PDI_SOURCE_DIR}/src>")
 target_link_libraries(PDI_C
-		PUBLIC paraconf::paraconf ${CMAKE_DL_LIBS}
-		PRIVATE spdlog::spdlog)
+		PUBLIC paraconf::paraconf ${CMAKE_DL_LIBS} 
+		PRIVATE spdlog::spdlog conduit::conduit)
+
 target_compile_features(PDI_C PRIVATE cxx_std_17 c_std_11)
 set_property(TARGET PDI_C PROPERTY LIBRARY_OUTPUT_NAME "pdi")
 set_property(TARGET PDI_C PROPERTY ENABLE_EXPORTS TRUE)
@@ -204,6 +209,7 @@ install(EXPORT PDI_C_EXPORT NAMESPACE "PDI::" DESTINATION "${INSTALL_CMAKEDIR}" 
 
 add_library(PDI_plugins INTERFACE)
 target_link_libraries(PDI_plugins INTERFACE PDI::PDI_C spdlog::spdlog)
+# target_link_libraries(PDI_plugins INTERFACE conduit::conduit)
 target_compile_features(PDI_plugins INTERFACE cxx_std_17 c_std_11)
 add_library(PDI::PDI_plugins ALIAS PDI_plugins)
 install(TARGETS PDI_plugins EXPORT PDI_plugins_EXPORT
@@ -239,7 +245,7 @@ if("${BUILD_PYTHON}")
 			"$<BUILD_INTERFACE:${PDI_SOURCE_DIR}/include>"
 			PRIVATE "$<BUILD_INTERFACE:${PDI_SOURCE_DIR}/src>"
 	)
-	target_link_libraries(PDI_pysupport PUBLIC pybind11::pybind11 PDI::PDI_plugins)
+	target_link_libraries(PDI_pysupport PUBLIC pybind11::python_link_helper pybind11::pybind11 PDI::PDI_plugins)
 	set_property(TARGET PDI_pysupport PROPERTY LIBRARY_OUTPUT_NAME "pdi_pysupport")
 	set_property(TARGET PDI_pysupport PROPERTY ENABLE_EXPORTS TRUE)
 	set_property(TARGET PDI_pysupport PROPERTY C_VISIBILITY_PRESET hidden)

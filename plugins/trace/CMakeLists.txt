@@ -30,10 +30,11 @@ include(GNUInstallDirs)
 
 # PDI
 find_package(PDI REQUIRED COMPONENTS plugins)
+find_package(conduit REQUIRED)
 
 # The plugin
 add_library(pdi_trace_plugin MODULE trace.cxx)
-target_link_libraries(pdi_trace_plugin PDI::PDI_plugins)
+target_link_libraries(pdi_trace_plugin PDI::PDI_plugins conduit::conduit)
 set_target_properties(pdi_trace_plugin PROPERTIES CXX_VISIBILITY_PRESET hidden)
 
 # installation

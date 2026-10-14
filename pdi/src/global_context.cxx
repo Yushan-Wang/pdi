@@ -34,6 +34,9 @@
 #include <dlfcn.h>
 #include <unistd.h>
 
+#include "conduit.hpp"
+#include "conduit_relay.hpp"
+
 #include "pdi/error.h"
 #include "pdi/logger.h"
 #include "pdi/paraconf_wrapper.h"
@@ -60,6 +63,22 @@ using std::vector;
 namespace PDI {
 
 namespace {
+
+void load_conduit(Context& ctx, PC_tree_t node, bool is_metadata)
+{
+	conduit::Node conduit_data;
+        
+	std::string yaml_file=to_string(node);
+	std::cout << "=== YAML FilePath ===" <<yaml_file <<std::endl;
+	// Load YAML file into Conduit node
+	conduit::relay::io::load(yaml_file, "yaml", conduit_data);
+	
+	std::cout << "=== YAML File Contents ===" << std::endl;
+	
+	// Option 1: Print in YAML format
+	std::cout << "\n1. Pretty YAML output:" << std::endl;
+	conduit_data.print();
+}
 
 void load_data(Context& ctx, PC_tree_t node, bool is_metadata)
 {
@@ -131,6 +150,13 @@ Global_context::Global_context(PC_tree_t conf)
 		load_data(*this, data, false);
 	} else {
 		m_logger.warn("Data is not defined in specification tree");
+	}
+
+	PC_tree_t conduit = PC_get(conf, ".conduit");
+	if (!PC_status(conduit)) {
+		load_conduit(*this, conduit, false);
+	} else {
+		m_logger.debug("Metadata is not defined in specification tree");
 	}
 
 

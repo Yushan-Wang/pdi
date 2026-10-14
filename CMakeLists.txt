@@ -78,7 +78,10 @@ option(BUILD_USER_CODE_PLUGIN   "Build User-code plugin" ON)
 option(BUILD_JSON_PLUGIN        "Build JSON plugin" OFF)
 option(BUILD_CONDUIT            "BUILD with conduit support" ON)
 
-
+if("${BUILD_CONDUIT}")
+	find_package(conduit REQUIRED)
+	list(APPEND CMAKE_MODULE_PATH "/Users/yushan/Codes/GitHub/pdi_yw/pdi/vendor/conduit/install-debug/lib/cmake/conduit/")
+endif()
 
 ### Default build type
 
@@ -112,9 +115,7 @@ if("${BUILD_DECL_NETCDF_PLUGIN}")
 	endif()
 	list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/plugins/decl_netcdf/cmake")
 endif()
-if("${BUILD_CONDUIT}")
-	list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/vendor/conduit/install-debug/lib/cmake/conduit/")
-endif()
+
 set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" CACHE STRING "" FORCE)
 
 
@@ -290,7 +291,7 @@ endif()
 ## HDF5
 
 if("${BUILD_DECL_HDF5_PLUGIN}" OR "${BUILD_DECL_NETCDF_PLUGIN}")
-	
+	find_package(HDF5 COMPONENTS C )
 	set(HDF5_CMAKE_CACHE_ARGS)
 	
 	if("${BUILD_HDF5_PARALLEL}")
@@ -312,7 +313,7 @@ if("${BUILD_DECL_HDF5_PLUGIN}" OR "${BUILD_DECL_NETCDF_PLUGIN}")
 	sbuild_add_dependency(HDF5 "${USE_DEFAULT}"
 		EMBEDDED_PATH "vendor/hdf5-1.12.3"
 		COMPONENTS ${HDF5_COMPONENTS}
-		MODULE_VARS HDF5_IS_PARALLEL HDF5_VERSION
+		MODULE_VARS HDF5_IS_PARALLEL HDF5_PROVIDES_PARALLEL HDF5_VERSION
 		CMAKE_CACHE_ARGS
 			-DBUILD_STATIC_LIBS:BOOL=OFF
 			-DBUILD_TESTING:BOOL=OFF
@@ -329,6 +330,9 @@ if("${BUILD_DECL_HDF5_PLUGIN}" OR "${BUILD_DECL_NETCDF_PLUGIN}")
 	if("${HDF5_FOUND}")
 		if("${HDF5_VERSION}" VERSION_LESS 1.10)
 			message(FATAL_ERROR "HDF5 version 1.10 at least required, HDF5 ${HDF5_VERSION} found.")
+		endif()
+		if("${HDF5_VERSION}" VERSION_GREATER_EQUAL 2.0.0)
+			set(HDF5_IS_PARALLEL "${HDF5_PROVIDES_PARALLEL}")
 		endif()
 		if("${BUILD_HDF5_PARALLEL}" AND NOT "${HDF5_IS_PARALLEL}")
 			message(FATAL_ERROR
